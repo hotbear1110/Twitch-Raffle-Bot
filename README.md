@@ -29,7 +29,9 @@ To run the bot open cmd in the directory you have the Raffle_bot.js file in and 
 Now the bot should be runnning and you can go ahead and start the bot with these commands:
 
 !startraffle to start the giveaway
+
 !endraffle to end the raffle. (if you want to end the raffle before the 60 sec timer)
+
 !join to join the giveaway
 
 Note: you can't enter your own giveaway :)
