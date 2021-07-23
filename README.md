@@ -13,7 +13,7 @@ You will need to change:
 1. The bot's Twitch username. (Here i am just using my own twitch account, to run the bot.) - line 6
 2. The bots oauth token, you can get that from here: https://twitchapps.com/tmi/ - line 7
 3. The Twitch channel, the bot will do the giveaway in. - line 10
-4. 
+
 ![image](https://user-images.githubusercontent.com/77441913/126835863-642e24ca-80f3-4c16-88f2-40ac03470b9d.png)
 
 You will also need to add your own Twitch username (So that you can send commands to the bot): - line 19
