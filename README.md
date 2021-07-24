@@ -2,29 +2,41 @@
 A Twitch chat bot, that can host a giveaway in chat.
 The code is really scuffed, cause i suck at js, this is my first time programming in js.
 
-First you will need to install node js from here: https://nodejs.org/en/
-When istalled, use cmd to also install tmi.js, using the Node Package Manager.
+First you will need to install Node.js from here: https://nodejs.org/en/
 
-![image](https://user-images.githubusercontent.com/77441913/126837342-c83459b2-3ad3-44a1-a306-1cd87b1fffe1.png)
+```sh
+$ git clone https://github.com/KUNszg/Twitch-Raffle-Bot
+$ cd ./Twitch-Raffle-Bot
+$ npm init # just press enter through everything
+$ npm i dank-twitch-irc
+```
 
 Now you will need to edit the script, so the bot can connect to the right channel and so on.
 
 You will need to change:
-1. The bot's Twitch username. (Here i am just using my own twitch account, to run the bot.) - line 6
-2. The bots oauth token, you can get that from here: https://twitchapps.com/tmi/ - line 7
-3. The Twitch channel, the bot will do the giveaway in. - line 10
+1. The bot's Twitch username. (Here i am just using my own twitch account, to run the bot.) - line 4
+2. The bots oauth token, you can get that from here: https://twitchapps.com/tmi/ - line 5
+3. The Twitch channel, the bot will do the giveaway in. - line 20
+4. The hostUid, simply your Twitch user ID. You can get it by using scriptorex -uid command. 
 
-![image](https://user-images.githubusercontent.com/77441913/126835863-642e24ca-80f3-4c16-88f2-40ac03470b9d.png)
+```javascript
+let client = new ChatClient({
+	username: "your-twitch-username", // justinfan12345 by default - For anonymous chat connection
+	password: "oauth:xxx", // undefined by default (no password)
+});
 
-You will also need to add your own Twitch username (So that you can send commands to the bot): - line 19
+hostUid = "135186096"; // hotbear1110's uid, change it to your own
 
-![image](https://user-images.githubusercontent.com/77441913/126836163-938de147-861f-427b-b318-daffb48f437d.png)
+client.joinAll(["nymn"]); // channels to join
+```
 
 Now you should be able to run the bot.
 
 To run the bot open cmd in the directory you have the Raffle_bot.js file in and type:
 
-![image](https://user-images.githubusercontent.com/77441913/126837616-87830d62-372f-4ab7-9746-66925a7dbb70.png)
+```sh
+~/Twitch-Raffle-Bot>$ node Raffle_bot.js 
+```
 
 Now the bot should be runnning and you can go ahead and start the bot with these commands:
 
