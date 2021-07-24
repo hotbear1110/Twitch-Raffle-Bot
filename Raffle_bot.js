@@ -1,117 +1,99 @@
-const tmi = require('tmi.js');
+const { ChatClient } = require("dank-twitch-irc");
 
+let client = new ChatClient({
+	username: "your-twitch-username", // justinfan12345 by default - For anonymous chat connection
+	password: "oauth:xxx", // undefined by default (no password)
+});
 
-const opts = {
-  identity: {
-    username: "the bot's twitch username",
-    password: "oauth token"
-  },
-  channels: [
-    "channel the bot runs in"
-  ]
-};
+// twitch user id of the person starting the raffle,
+//you can get it by for example using scriptorex command in chat: -uid <username>
+hostUid = "135186096"; // hotbear's uid
 
-
-const client = new tmi.client(opts);
-let names = [];
-let people = 0;
-let rafflestart = 0;
-hostname = "your twitch username";
-
-
-
-client.on('message', onMessageHandler);
-client.on('connected', onConnectedHandler);
-
+client.on("ready", () => console.log("Successfully connected to chat"));
+client.on("close", (error) => {
+  if (error != null) {
+    console.error("Client closed due to error", error);
+  }
+});
 
 client.connect();
+client.joinAll(["nymn"]); // channels to join
 
+let names = new Set();
+let rafflestart = false;
 
-function onMessageHandler (target, context, msg, self) {
-  if (self) { return; } 
+client.on("PRIVMSG", (msg) => {
+	onMessageHandler(`#${msg.channelName}`, msg, msg.messageText);
+})
 
- 
-  const commandName = msg.trim();
-  console.log(commandName);
-  
+function onMessageHandler (channel, user, message) {
+ 	const commandName = message.split(" ")[0];
+
+  const timestamp = new Date().toISOString().split("T")[1].replace("Z", "");
+  console.log(`#${timestamp}# ${user.senderUsername}: ${message}`);
+
 	const sleep = (milliseconds) => {
-	const start = new Date().getTime();
+		const start = new Date().getTime();
     for (let i = 0; i < 1e7; i++) {
-		if ((new Date().getTime() - start) > milliseconds) {
-            break;
-}
-	}
-        }
-  
-	if (rafflestart === 0 && context.username === hostname && commandName === "!startraffle") {
-		
-		function timer() {
-  var minute = 5;
-  var sec = 60;
-  setInterval(function() {
-	  console.log(sec);
-	  if (sec === 40 || sec === 20) {
-		client.say(target, `DinkDonk TYPE !join TO JOIN THE RAFFLE DinkDonk RAFFLE ENDS IN ` + sec + ` SECONDS!`)
-	  }
-	  if (sec >= 1 && sec <= 9) {
-		  client.say(target, `DinkDonk ` + sec)
-	  }
-	  if (sec === 1) {
-		let number = Math.floor(Math.random() * names.length);
-		let winner = names[number];
-		console.log(number, winner);
-		sleep(2000);
-		client.say(target, ` peepoPog --[[ DinkDonk ` + winner + ` DinkDonk ]]-- HAS WON THE RAFFLE! peepoPog`);
-		rafflestart = 0;
-		sec = 1000
-		
-	  }
-    sec--;
-    if (sec == 00) {
-      minute --;
-      sec = 60;
-      if (minute == 0) {
-        minute = 5;
-      }
-    }
-  }, 1000);
-}
+			if ((new Date().getTime() - start) > milliseconds) {
+        break;
+		}			}
 
-x = timer();
-		
-		rafflestart = 1;
-		client.say(target, `DinkDonk --[[ A NEW RAFFLE FOR A FREE STEAM GAME KEY HAS BEGUN ]]-- DinkDonk`);
-		client.say(target, `DinkDonk TYPE !join TO JOIN THE RAFFLE DinkDonk`)
-		
-	}
-
-  
-  if (rafflestart === 1 && commandName.startsWith('!join') && context.username != hostname) {
-	if (names.includes(context.username)) {
-		console.log(context.username, `is already in the raffle`);
-	}
-   else if (rafflestart === 1 && names.includes(context.username) === false){
-    client.say(target, context.username + ` has joined the raffle! peepoPog`);
-    console.log(`* Executed ${commandName} command`, + people);
-	names[people] = context.username;
-	console.log(names)
-	people = people + 1;
   }
 
-}
-	else if (rafflestart === 1 && context.username === hostname && commandName === '!endraffle') {
-		let number = Math.floor(Math.random() * names.length);
-		let winner = names[number];
-		console.log(number, winner);
-		client.say(target, ` peepoPog --[[ DinkDonk ` + winner + ` DinkDonk ]]-- HAS WON THE RAFFLE! peepoPog`);
-		rafflestart = 0;
-		
+	if (!rafflestart && user.senderUserID === hostUid && commandName === "!startraffle") {
+		function timer() {
+			rafflestart = true;
+		  let sec = 60;
+
+		  setInterval(function() {
+			  console.log(sec);
+			  if (sec === 40 || sec === 20) {
+					client.say(channel, `DinkDonk TYPE !join TO JOIN THE RAFFLE DinkDonk RAFFLE ENDS IN ${sec} SECONDS!`);
+			  }
+			  if (sec >= 1 && sec <= 9) {
+				  client.say(channel, `DinkDonk ${sec}`);
+			  }
+			  if (sec === 1) {
+					const number = Math.floor(Math.random() * (names.size - 1));
+
+					const winner = [...names.values()][number];
+
+					console.log(number, winner);
+					
+					sleep(2000);
+
+					client.say(channel, ` peepoPog --[[ DinkDonk ${winner} DinkDonk ]]-- HAS WON THE RAFFLE! peepoPog`);
+					
+					rafflestart = false;
+					sec = 1000	
+			  }
+		    sec--;
+		  }, 1000);
+		}
+		timer();	
+
+		client.say(channel, "DinkDonk --[[ A NEW RAFFLE FOR A FREE STEAM GAME KEY HAS BEGUN ]]-- DinkDonk");
+		client.say(channel, "DinkDonk TYPE !join TO JOIN THE RAFFLE DinkDonk")		
 	}
 
-}
+  if (rafflestart && commandName === '!join' && user.senderUserID != hostUid) {
+		if (names.has(user.senderUsername)) {
+			console.log(user.senderUsername, `is already in the raffle`);
+		}
+	  else if (rafflestart) {
+	    client.say(channel, `${user.senderUsername} has joined the raffle! peepoPog`);
+			console.log(names.add(user.senderUsername))
+  	}
+	}
+	else if (rafflestart && user.senderUserID === hostUid && commandName === '!endraffle') {
+		const number = Math.floor(Math.random() * (names.size - 1));
 
+		const winner = [...names.values()][number];
 
+		console.log(number, winner);
 
-function onConnectedHandler (addr, port) {
-  console.log(`* Connected to ${addr}:${port}`);
+		client.say(channel, ` peepoPog --[[ DinkDonk ${winner} DinkDonk ]]-- HAS WON THE RAFFLE! peepoPog`);
+		rafflestart = false;
+	}
 }
