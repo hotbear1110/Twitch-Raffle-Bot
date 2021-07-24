@@ -5,7 +5,7 @@ The code is really scuffed, cause i suck at js, this is my first time programmin
 First you will need to install Node.js from here: https://nodejs.org/en/
 
 ```sh
-$ git clone https://github.com/KUNszg/Twitch-Raffle-Bot
+$ git clone https://github.com/hotbear1110/Twitch-Raffle-Bot
 $ cd ./Twitch-Raffle-Bot
 $ npm init # just press enter through everything
 $ npm i dank-twitch-irc
