@@ -1,3 +1,6 @@
+>[!WARNING]
+>I'm moving my repositories to my [Codeberg account](https://codeberg.org/hotbear1110). This repository has moved over to https://codeberg.org/hotbear1110/Twitch-Raffle-Bot
+
 # Twitch-Raffle-Bot
 A Twitch chat bot, that can host a giveaway in chat.
 The code is really scuffed, cause i suck at js, this is my first time programming in js.
